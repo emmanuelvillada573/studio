@@ -38,7 +38,7 @@ export function TransactionsTable({ transactions }: TransactionsTableProps) {
               {formatCurrency(transaction.amount)}
             </TableCell>
             <TableCell className="hidden md:table-cell text-right text-muted-foreground">
-                {transaction.date.toLocaleDateString()}
+                {transaction.date.toLocaleDateString('en-US', { year: 'numeric', month: 'numeric', day: 'numeric' })}
             </TableCell>
           </TableRow>
         ))}
