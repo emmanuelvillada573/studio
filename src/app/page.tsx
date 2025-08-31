@@ -41,6 +41,17 @@ export default function Home() {
     }
   }, [user, loading, router]);
 
+  const summary = React.useMemo(() => {
+    const income = transactions
+      .filter((t) => t.type === "income")
+      .reduce((acc, t) => acc + t.amount, 0);
+    const expenses = transactions
+      .filter((t) => t.type === "expense")
+      .reduce((acc, t) => acc + t.amount, 0);
+    const savings = income - expenses;
+    return { income, expenses, savings, total: transactions.length };
+  }, [transactions]);
+
 
   if (loading || dataLoading || !user) {
     return <div>Loading...</div>;
@@ -78,17 +89,6 @@ export default function Home() {
     }));
     exportToCsv("transactions.csv", dataToExport);
   };
-
-  const summary = React.useMemo(() => {
-    const income = transactions
-      .filter((t) => t.type === "income")
-      .reduce((acc, t) => acc + t.amount, 0);
-    const expenses = transactions
-      .filter((t) => t.type === "expense")
-      .reduce((acc, t) => acc + t.amount, 0);
-    const savings = income - expenses;
-    return { income, expenses, savings, total: transactions.length };
-  }, [transactions]);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
