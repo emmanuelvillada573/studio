@@ -8,25 +8,55 @@ import { TransactionsTable } from "@/components/dashboard/transactions-table";
 import { BudgetTracker } from "@/components/dashboard/budget-tracker";
 import { Charts } from "@/components/dashboard/charts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { initialTransactions, initialBudgets } from "@/lib/data";
 import { exportToCsv } from "@/lib/utils";
 import type { Transaction, Budget, Category } from "@/lib/types";
 import { ArrowDown, ArrowUp, Wallet, ArrowRightLeft } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
+import { getTransactions, addTransaction } from "@/services/transactions";
+import { getBudgets, setBudget } from "@/services/budgets";
 
 export default function Home() {
-  const [transactions, setTransactions] = React.useState<Transaction[]>(initialTransactions);
-  const [budgets, setBudgets] = React.useState<Budget[]>(initialBudgets);
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const [transactions, setTransactions] = React.useState<Transaction[]>([]);
+  const [budgets, setBudgets] = React.useState<Budget[]>([]);
+  const [dataLoading, setDataLoading] = React.useState(true);
 
-  const handleAddTransaction = (transaction: Omit<Transaction, "id" | "date">) => {
+  React.useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    } else if(user) {
+      const fetch_data = async () => {
+        setDataLoading(true);
+        const [transactionsData, budgetsData] = await Promise.all([
+          getTransactions(user.uid),
+          getBudgets(user.uid)
+        ]);
+        setTransactions(transactionsData);
+        setBudgets(budgetsData);
+        setDataLoading(false);
+      };
+      fetch_data();
+    }
+  }, [user, loading, router]);
+
+
+  if (loading || dataLoading || !user) {
+    return <div>Loading...</div>;
+  }
+
+  const handleAddTransaction = async (transaction: Omit<Transaction, "id" | "date">) => {
     const newTransaction = {
       ...transaction,
-      id: crypto.randomUUID(),
       date: new Date(),
     };
-    setTransactions((prev) => [newTransaction, ...prev]);
+    const addedTransaction = await addTransaction(user.uid, newTransaction);
+    setTransactions((prev) => [addedTransaction, ...prev]);
   };
 
-  const handleSetBudget = (category: Category, amount: number) => {
+  const handleSetBudget = async (category: Category, amount: number) => {
+    await setBudget(user.uid, { category, amount });
     setBudgets((prev) => {
       const existingBudget = prev.find((b) => b.category === category);
       if (existingBudget) {
