@@ -24,23 +24,26 @@ export default function Home() {
   const [dataLoading, setDataLoading] = React.useState(true);
 
   React.useEffect(() => {
-    if (!loading && !user) {
+    const fetch_data = async (userId: string) => {
+      setDataLoading(true);
+      const [transactionsData, budgetsData] = await Promise.all([
+        getTransactions(userId),
+        getBudgets(userId),
+      ]);
+      setTransactions(transactionsData);
+      setBudgets(budgetsData);
+      setDataLoading(false);
+    };
+
+    if (loading) return;
+
+    if (!user) {
       router.push('/login');
-    } else if(user) {
-      const fetch_data = async () => {
-        setDataLoading(true);
-        const [transactionsData, budgetsData] = await Promise.all([
-          getTransactions(user.uid),
-          getBudgets(user.uid)
-        ]);
-        setTransactions(transactionsData);
-        setBudgets(budgetsData);
-        setDataLoading(false);
-      };
-      fetch_data();
+    } else {
+      fetch_data(user.uid);
     }
   }, [user, loading, router]);
-
+  
   const summary = React.useMemo(() => {
     const income = transactions
       .filter((t) => t.type === "income")
@@ -52,12 +55,8 @@ export default function Home() {
     return { income, expenses, savings, total: transactions.length };
   }, [transactions]);
 
-
-  if (loading || dataLoading || !user) {
-    return <div>Loading...</div>;
-  }
-
   const handleAddTransaction = async (transaction: Omit<Transaction, "id" | "date">) => {
+    if (!user) return;
     const newTransaction = {
       ...transaction,
       date: new Date(),
@@ -67,6 +66,7 @@ export default function Home() {
   };
 
   const handleSetBudget = async (category: Category, amount: number) => {
+    if (!user) return;
     await setBudget(user.uid, { category, amount });
     setBudgets((prev) => {
       const existingBudget = prev.find((b) => b.category === category);
@@ -89,6 +89,10 @@ export default function Home() {
     }));
     exportToCsv("transactions.csv", dataToExport);
   };
+
+  if (loading || dataLoading || !user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
