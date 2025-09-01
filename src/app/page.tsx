@@ -15,6 +15,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { getTransactions, addTransaction } from "@/services/transactions";
 import { getBudgets, setBudget } from "@/services/budgets";
+import  Spinner from "@/components/ui/spinner";
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -91,7 +92,8 @@ export default function Home() {
   };
 
   if (loading || dataLoading || !user) {
-    return <div>Loading...</div>;
+    return 
+    <Spinner></Spinner>
   }
 
   return (
