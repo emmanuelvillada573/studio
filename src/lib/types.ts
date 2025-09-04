@@ -53,3 +53,17 @@ export type Budget = {
   category: Category;
   amount: number;
 };
+
+export type Household = {
+  id: string;
+  name: string;
+  members: string[]; // array of user UIDs
+  owner: string; // UID of the owner
+};
+
+export type Invite = {
+  id: string;
+  householdId: string;
+  invitedBy: string; // user email
+  status: 'pending' | 'accepted' | 'declined';
+};

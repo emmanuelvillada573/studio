@@ -15,7 +15,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { getTransactions, addTransaction } from "@/services/transactions";
 import { getBudgets, setBudget } from "@/services/budgets";
-import  Spinner from "@/components/ui/spinner";
+import Spinner from "@/components/ui/spinner";
+import { InviteUser } from "@/components/dashboard/invite-user";
+import { getHousehold, inviteUserToHousehold } from "@/services/households";
+import { Household, Invite } from "@/lib/types";
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -23,17 +26,27 @@ export default function Home() {
   const [transactions, setTransactions] = React.useState<Transaction[]>([]);
   const [budgets, setBudgets] = React.useState<Budget[]>([]);
   const [dataLoading, setDataLoading] = React.useState(true);
+  const [household, setHousehold] = React.useState<Household | null>(null);
 
   React.useEffect(() => {
-    const fetch_data = async (userId: string) => {
+    const fetchData = async (userId: string) => {
       setDataLoading(true);
-      const [transactionsData, budgetsData] = await Promise.all([
-        getTransactions(userId),
-        getBudgets(userId),
-      ]);
-      setTransactions(transactionsData);
-      setBudgets(budgetsData);
-      setDataLoading(false);
+      try {
+        const householdData = await getHousehold(userId);
+        if (householdData) {
+          setHousehold(householdData);
+          const [transactionsData, budgetsData] = await Promise.all([
+            getTransactions(householdData.id),
+            getBudgets(householdData.id),
+          ]);
+          setTransactions(transactionsData);
+          setBudgets(budgetsData);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setDataLoading(false);
+      }
     };
 
     if (loading) return;
@@ -41,10 +54,10 @@ export default function Home() {
     if (!user) {
       router.push('/login');
     } else {
-      fetch_data(user.uid);
+      fetchData(user.uid);
     }
   }, [user, loading, router]);
-  
+
   const summary = React.useMemo(() => {
     const income = transactions
       .filter((t) => t.type === "income")
@@ -57,18 +70,18 @@ export default function Home() {
   }, [transactions]);
 
   const handleAddTransaction = async (transaction: Omit<Transaction, "id" | "date">) => {
-    if (!user) return;
+    if (!household) return;
     const newTransaction = {
       ...transaction,
       date: new Date(),
     };
-    const addedTransaction = await addTransaction(user.uid, newTransaction);
+    const addedTransaction = await addTransaction(household.id, newTransaction);
     setTransactions((prev) => [addedTransaction, ...prev]);
   };
 
   const handleSetBudget = async (category: Category, amount: number) => {
-    if (!user) return;
-    await setBudget(user.uid, { category, amount });
+    if (!household) return;
+    await setBudget(household.id, { category, amount });
     setBudgets((prev) => {
       const existingBudget = prev.find((b) => b.category === category);
       if (existingBudget) {
@@ -80,6 +93,16 @@ export default function Home() {
     });
   };
 
+  const handleInviteUser = async (email: string) => {
+    if (!household) return;
+    const invite: Omit<Invite, 'id'> = {
+      householdId: household.id,
+      invitedBy: user?.email || 'Unknown',
+      status: 'pending',
+    };
+    await inviteUserToHousehold(email, invite);
+  };
+  
   const handleExport = () => {
     const dataToExport = transactions.map(t => ({
       date: t.date.toISOString().split('T')[0],
@@ -92,8 +115,7 @@ export default function Home() {
   };
 
   if (loading || dataLoading || !user) {
-    return 
-    <Spinner></Spinner>
+    return <Spinner />;
   }
 
   return (
@@ -141,6 +163,7 @@ export default function Home() {
               transactions={transactions}
               onSetBudget={handleSetBudget}
             />
+             <InviteUser onInviteUser={handleInviteUser} />
           </div>
         </div>
         <Charts transactions={transactions} />

@@ -6,18 +6,18 @@ import {
   addDoc,
   getDocs,
   query,
-  where,
   Timestamp,
   orderBy,
 } from "firebase/firestore";
 import type { Transaction } from "@/lib/types";
 
-const getTransactionsCollection = (userId: string) => {
-  return collection(db, "users", userId, "transactions");
+// Transactions are now subcollections of a household
+const getTransactionsCollection = (householdId: string) => {
+  return collection(db, "households", householdId, "transactions");
 };
 
-export const getTransactions = async (userId: string): Promise<Transaction[]> => {
-  const transactionsCol = getTransactionsCollection(userId);
+export const getTransactions = async (householdId: string): Promise<Transaction[]> => {
+  const transactionsCol = getTransactionsCollection(householdId);
   const q = query(transactionsCol, orderBy("date", "desc"));
   const querySnapshot = await getDocs(q);
   return querySnapshot.docs.map((doc) => {
@@ -34,10 +34,10 @@ export const getTransactions = async (userId: string): Promise<Transaction[]> =>
 };
 
 export const addTransaction = async (
-  userId: string,
+  householdId: string,
   transaction: Omit<Transaction, "id">
 ): Promise<Transaction> => {
-  const transactionsCol = getTransactionsCollection(userId);
+  const transactionsCol = getTransactionsCollection(householdId);
   const docRef = await addDoc(transactionsCol, {
     ...transaction,
     date: Timestamp.fromDate(transaction.date),
