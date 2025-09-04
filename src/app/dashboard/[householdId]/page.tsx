@@ -20,10 +20,10 @@ import { InviteUser } from "@/components/dashboard/invite-user";
 import { inviteUserToHousehold } from "@/services/households";
 import { Household, Invite } from "@/lib/types";
 
-export default function DashboardPage({ params }: { params: { householdId: string } }) {
+export default function DashboardPage({ params }: { params:  Promise<{ householdId: string }> }) {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const householdId = params.householdId;
+  const {householdId} = React.use(params);
 
   const [transactions, setTransactions] = React.useState<Transaction[]>([]);
   const [budgets, setBudgets] = React.useState<Budget[]>([]);

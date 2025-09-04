@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "@/components/ui/button";
-import { Download, Wallet, LogOut, User as UserIcon } from "lucide-react";
+import { Download, Wallet, LogOut, User as UserIcon, Home } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
@@ -20,6 +20,10 @@ export function Header({ onExport }: HeaderProps) {
     router.push('/login');
   };
 
+  const goToHouseholds = () => {
+    router.push('/households');
+  };
+
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <div className="flex items-center gap-2">
@@ -29,6 +33,12 @@ export function Header({ onExport }: HeaderProps) {
         </h1>
       </div>
       <div className="ml-auto flex items-center gap-4">
+        <Button size="sm" variant="outline" className="h-8 gap-1" onClick={goToHouseholds}>
+          <Home className="h-3.5 w-3.5" />
+          <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+            Households
+          </span>
+        </Button>
         <Button size="sm" variant="outline" className="h-8 gap-1" onClick={onExport}>
           <Download className="h-3.5 w-3.5" />
           <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
