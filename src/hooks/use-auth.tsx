@@ -4,7 +4,6 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, User } from 'firebase/auth';
 import { auth, db } from '@/lib/firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { createHousehold } from '@/services/households';
 
 interface AuthContextType {
   user: User | null;
@@ -42,9 +41,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email: user.email,
         uid: user.uid,
       });
-
-      // Create a household for the new user
-      await createHousehold(user.uid, user.email || 'Unnamed Household');
+      // A household is no longer created automatically. 
+      // The user will be redirected to the /households page to create or join one.
     }
     return userCredential;
   };

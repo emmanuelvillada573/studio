@@ -62,8 +62,9 @@ export type Household = {
 };
 
 export type Invite = {
-  id: string;
   householdId: string;
   invitedBy: string; // user email
   status: 'pending' | 'accepted' | 'declined';
 };
+
+export type InviteWithId = Invite & { id: string };
