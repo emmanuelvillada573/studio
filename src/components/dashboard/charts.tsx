@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Bar, BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Donut, Pie, PieChart } from "recharts"
+import { Bar, BarChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Pie, PieChart } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import type { Transaction } from "@/lib/types"
 import { ChartContainer, ChartTooltipContent, ChartConfig } from "@/components/ui/chart"
@@ -27,6 +27,12 @@ const pieChartConfig = {
   Health: { label: "Health", color: "hsl(var(--chart-3))" },
   Travel: { label: "Travel", color: "hsl(var(--chart-4))" },
   Other: { label: "Other", color: "hsl(var(--chart-5))" },
+  'Personal Care': { label: 'Personal Care', color: 'hsl(var(--chart-1))' },
+  Education: { label: 'Education', color: 'hsl(var(--chart-2))' },
+  Gifts: { label: 'Gifts', color: 'hsl(var(--chart-3))' },
+  Salary: { label: 'Salary', color: 'hsl(var(--chart-4))' },
+  Freelance: { label: 'Freelance', color: 'hsl(var(--chart-5))' },
+  Investment: { label: 'Investment', color: 'hsl(var(--chart-1))' },
 } satisfies ChartConfig
 
 export function Charts({ transactions }: ChartsProps) {
