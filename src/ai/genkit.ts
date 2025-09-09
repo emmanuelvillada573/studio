@@ -2,7 +2,7 @@
 
 import {googleAI} from '@genkit-ai/googleai';
 import {genkit, type GenkitOptions} from 'genkit';
-import {firebase} from '@genkit-ai/firebase';
+import {firebase} from '@genkit-ai/firebase/plugin';
 
 const genkitOptions: GenkitOptions = {
   plugins: [
