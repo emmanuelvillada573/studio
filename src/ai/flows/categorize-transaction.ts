@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import {googleAI} from '@genkit-ai/googleai';
 
 const CategorizeTransactionInputSchema = z.object({
   transactionDescription: z
@@ -36,6 +37,7 @@ const prompt = ai.definePrompt({
   name: 'categorizeTransactionPrompt',
   input: {schema: CategorizeTransactionInputSchema},
   output: {schema: CategorizeTransactionOutputSchema},
+  model: googleAI.model('gemini-1.5-flash-latest'),
   prompt: `Given the following transaction description, predict the most likely expense category.
 
 Transaction Description: {{{transactionDescription}}}

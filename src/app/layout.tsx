@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from '@/hooks/use-auth';
 
 export const metadata: Metadata = {
-  title: 'HomeBase Economy',
+  title: 'Homebase Economyk',
   description: 'Administer the economy of your house.',
 };
 
