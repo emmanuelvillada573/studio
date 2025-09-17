@@ -5,7 +5,7 @@ import { getFirestore } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyCWUD1YjUKJzs1Gr4zGoY3PEEJotjxQCtE",
+  apiKey: "AIzaSyD6qM6TPUo_TKPc8sQbijpOSbhjR_Rf7qo",
   authDomain: "homebase-economy.firebaseapp.com",
   projectId: "homebase-economy",
   storageBucket: "homebase-economy.firebasestorage.app",
