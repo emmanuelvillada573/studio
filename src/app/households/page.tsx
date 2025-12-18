@@ -89,28 +89,28 @@ export default function HouseholdsPage() {
       });
     }
   };
-  
+
   const handleAcceptInvite = async (inviteId: string, householdId: string) => {
     if (!user) return;
     try {
-        await acceptInvite(user.uid, inviteId, householdId);
-        toast({ title: "Success", description: "You have joined the household." });
-        fetchData(user.uid);
+      await acceptInvite(user.uid, inviteId, householdId);
+      toast({ title: "Success", description: "You have joined the household." });
+      fetchData(user.uid);
     } catch (error) {
-        console.error("Error accepting invite:", error);
-        toast({ variant: "destructive", title: "Error", description: "Failed to join household." });
+      console.error("Error accepting invite:", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to join household." });
     }
   };
 
   const handleDeclineInvite = async (inviteId: string) => {
     if (!user) return;
-     try {
-        await declineInvite(user.uid, inviteId);
-        toast({ title: "Invite Declined", description: "You have declined the invitation." });
-        fetchData(user.uid);
+    try {
+      await declineInvite(user.uid, inviteId);
+      toast({ title: "Invite Declined", description: "You have declined the invitation." });
+      fetchData(user.uid);
     } catch (error) {
-        console.error("Error declining invite:", error);
-        toast({ variant: "destructive", title: "Error", description: "Failed to decline invite." });
+      console.error("Error declining invite:", error);
+      toast({ variant: "destructive", title: "Error", description: "Failed to decline invite." });
     }
   };
 
@@ -121,7 +121,7 @@ export default function HouseholdsPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-muted/40 p-4">
       <div className="w-full max-w-2xl space-y-8">
-        
+
         {/* Households List */}
         <Card>
           <CardHeader>
@@ -134,7 +134,7 @@ export default function HouseholdsPage() {
                 {households.map((h) => (
                   <li key={h.id}>
                     <Button variant="outline" className="w-full justify-start" onClick={() => router.push(`/dashboard/${h.id}`)}>
-                       <Home className="mr-2 h-4 w-4" /> {h.name}
+                      <Home className="mr-2 h-4 w-4" /> {h.name}
                     </Button>
                   </li>
                 ))}
@@ -161,12 +161,12 @@ export default function HouseholdsPage() {
                       <p className="text-sm text-muted-foreground">Household ID: {invite.householdId}</p>
                     </div>
                     <div className="flex gap-2">
-                       <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => handleAcceptInvite(invite.id, invite.householdId)}>
-                           <Check className="h-4 w-4" />
-                       </Button>
-                       <Button size="icon" variant="destructive" className="h-8 w-8" onClick={() => handleDeclineInvite(invite.id)}>
-                           <X className="h-4 w-4" />
-                       </Button>
+                      <Button size="icon" variant="outline" className="h-8 w-8" onClick={() => handleAcceptInvite(invite.id, invite.householdId)}>
+                        <Check className="h-4 w-4" />
+                      </Button>
+                      <Button size="icon" variant="destructive" className="h-8 w-8" onClick={() => handleDeclineInvite(invite.id)}>
+                        <X className="h-4 w-4" />
+                      </Button>
                     </div>
                   </li>
                 ))}

@@ -37,18 +37,15 @@ const pieChartConfig = {
 
 export function Charts({ transactions }: ChartsProps) {
   const barChartData = React.useMemo(() => {
-    const dataByMonth: { [key: string]: { month: string; income: number; expenses: number } } = {}
-    transactions.forEach(t => {
+    const dataByMonth = transactions.reduce((acc, t) => {
       const month = t.date.toLocaleString('default', { month: 'short' });
-      if (!dataByMonth[month]) {
-        dataByMonth[month] = { month, income: 0, expenses: 0 };
+      if (!acc[month]) {
+        acc[month] = { month, income: 0, expenses: 0 };
       }
-      if (t.type === 'income') {
-        dataByMonth[month].income += t.amount;
-      } else {
-        dataByMonth[month].expenses += t.amount;
-      }
-    });
+      acc[month][t.type === 'income' ? 'income' : 'expenses'] += t.amount;
+      return acc;
+    }, {} as Record<string, { month: string; income: number; expenses: number }>);
+
     return Object.values(dataByMonth).reverse();
   }, [transactions]);
 
@@ -92,14 +89,15 @@ export function Charts({ transactions }: ChartsProps) {
           <CardDescription>How you're spending your money.</CardDescription>
         </CardHeader>
         <CardContent className="flex items-center justify-center">
-            <ChartContainer config={pieChartConfig} className="h-[300px] w-full">
-                <PieChart>
-                <Tooltip cursor={false} content={<ChartTooltipContent hideLabel formatter={(value) => formatCurrency(value as number)} />} />
-                <Pie data={pieChartData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={100} strokeWidth={2}>
-                </Pie>
-                </PieChart>
-            </ChartContainer>
+          <ChartContainer config={pieChartConfig} className="h-[300px] w-full">
+            <PieChart>
+              <Tooltip cursor={false} content={<ChartTooltipContent hideLabel formatter={(value) => formatCurrency(value as number)} />} />
+              <Pie data={pieChartData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={100} strokeWidth={2}>
+              </Pie>
+            </PieChart>
+          </ChartContainer>
         </CardContent>
+
       </Card>
     </div>
   )
